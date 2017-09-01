@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  SolarSystemVC.swift
 //  SolarSystemWithAR
 //
 //  Created by charles on 2017/9/1.
@@ -10,9 +10,9 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController {
-
-    @IBOutlet var sceneView: ARSCNView!
+class SolarSystemVC: UIViewController, ARSCNViewDelegate {
+    
+    @IBOutlet var sceneViews: ARSCNView!
     
     var scene = SCNScene()
     
@@ -85,100 +85,108 @@ class ViewController: UIViewController {
     let rotationDurationSelfNeptune = 6.0
     
     let rotationDurationSelfMoon = 6.0
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Create a session configuration
+        let configuration = ARWorldTrackingConfiguration()
+        
+        // Run the view's session
+        sceneViews.session.run(configuration)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Pause the view's session
+        sceneViews.session.pause()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+          
 
         //获取SCNView
         let scnView = self.view as! SCNView
         //将SCNView的场景设置为我的场景
         scnView.scene = scene
-
-        // create and add a camera to the scene
-//        let cameraNode = SCNNode()
-//        cameraNode.camera = SCNCamera()
-//        scene.rootNode.addChildNode(cameraNode)
-//
-//        // place the camera
-//        cameraNode.position = SCNVector3(x: 4, y: 0, z: 4)
         
-//        let geometry = SCNPlane.init(width: 0.24, height: 0.2)
-//        geometry.materials.first?.diffuse.contents = "art.scnassets/image/tongtong.jpeg"
-//        //SCNSphere是SCNGeomery的一个子类，通过这个类可以创建更多的形状
-//        let node = SCNNode(geometry: geometry)
-//        node.position = SCNVector3(0, -0.5, -1)//节点的位置
-//        node.name = "tongtong"
-//        scene.rootNode.addChildNode(node)
-
-//        // create and add a light to the scene
-//        let lightNode = SCNNode()
-//        lightNode.light = SCNLight()
-//        lightNode.light!.type = .ambient
-//        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-//        scene.rootNode.addChildNode(lightNode)
-//
-//        // create and add an ambient light to the scene
-//        let ambientLightNode = SCNNode()
-//        ambientLightNode.light = SCNLight()
-//        ambientLightNode.light!.type = .ambient
-//        ambientLightNode.light!.color = UIColor.white
-//        scene.rootNode.addChildNode(ambientLightNode)
-
+        // create and add a camera to the scene
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        scene.rootNode.addChildNode(cameraNode)
+        
+        // place the camera
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 80)
+        
+        // create and add a light to the scene
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .ambient
+        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+        scene.rootNode.addChildNode(lightNode)
+        
+        // create and add an ambient light to the scene
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        ambientLightNode.light!.color = UIColor.white
+        scene.rootNode.addChildNode(ambientLightNode)
+        
         //创建太阳
         sun = creatPlant(name: "sun", radius: radiusSun, pX: 0, pY: 0, pZ: 0, hasTrack: false, rotationSelfDuration: rotationDurationSelfSun)
         scene.rootNode.addChildNode(sun)
-
+        
         //创建水星
         mercury = creatPlant(name: "mercury", radius: radiusMercury, pX: trackRadiusMercury, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfMercury)
         mercuryRotationNode = createPlantRotationCenter(name: "mercury", rotationDuration: rotationDurationMercury)
         mercuryRotationNode.addChildNode(mercury)
         scene.rootNode.addChildNode(mercuryRotationNode)
-
+        
         //创建金星
         venus = creatPlant(name: "venus", radius: radiusVenus, pX: trackRadiusVenus, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfVenus)
         venusRotationNode = createPlantRotationCenter(name: "venus", rotationDuration: rotationDurationVenus)
         venusRotationNode.addChildNode(venus)
         scene.rootNode.addChildNode(venusRotationNode)
-
+        
         //创建地球
         earth = creatPlant(name: "earth", radius: radiusEarth, pX: trackRadiusEarth, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfEarth)
         earthRotationNode = createPlantRotationCenter(name: "earth", rotationDuration: rotationDurationEarth)
         earthRotationNode.addChildNode(earth)
         scene.rootNode.addChildNode(earthRotationNode)
-
+        
         //创建火星
         mars = creatPlant(name: "mars", radius: radiusMars, pX: trackRadiusMars, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfMars)
         marsRotationNode = createPlantRotationCenter(name: "mars", rotationDuration: rotationDurationMars)
         marsRotationNode.addChildNode(mars)
         scene.rootNode.addChildNode(marsRotationNode)
-
+        
         //创建木星
         jupiter = creatPlant(name: "jupiter", radius: radiusJupiter, pX: trackRadiusJupiter, pY: 0, pZ: 0, hasTrack: true,  rotationSelfDuration: rotationDurationSelfJupiter)
         jupiterRotationNode = createPlantRotationCenter(name: "jupiter", rotationDuration: rotationDurationJupiter)
         jupiterRotationNode.addChildNode(jupiter)
         scene.rootNode.addChildNode(jupiterRotationNode)
-
+        
         //创建土星
         saturn = creatPlant(name: "saturn", radius: radiusSaturn, pX: trackRadiusSaturn, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfSaturn)
         saturnRotationNode = createPlantRotationCenter(name: "saturn", rotationDuration: rotationDurationSaturn)
         saturnRotationNode.addChildNode(saturn)
         scene.rootNode.addChildNode(saturnRotationNode)
-
+        
         //创建天王星
         uranus = creatPlant(name: "uranus", radius: radiusUranus, pX: trackRadiusUranus, pY: 0, pZ: 0, hasTrack: true, rotationSelfDuration: rotationDurationSelfUranus)
         uranusRotationNode = createPlantRotationCenter(name: "uranus", rotationDuration: rotationDurationUranus)
         uranusRotationNode.addChildNode(uranus)
         scene.rootNode.addChildNode(uranusRotationNode)
-
+        
         //创建海王星
         neptune = creatPlant(name: "neptune", radius: radiusNeptune, pX: trackRadiusNeptune, pY: 0, pZ: 0, hasTrack: true,  rotationSelfDuration: rotationDurationSelfNeptune)
         neptuneRotationNode = createPlantRotationCenter(name: "neptune", rotationDuration: rotationDurationNeptune)
         neptuneRotationNode.addChildNode(neptune)
         scene.rootNode.addChildNode(neptuneRotationNode)
-
+        
         //创建月亮
         moon = creatPlant(name: "moon", radius: radiusMoon, pX: trackRadiusMoon, pY: 0, pZ: 0, hasTrack: false,  rotationSelfDuration: 100000)
         addTrack(name: "moon", radius: trackRadiusMoon, onPlant: earth)
@@ -254,87 +262,6 @@ class ViewController: UIViewController {
         node.name = name + "T"
         onPlant.addChildNode(node)
     }
-    
-    @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result: AnyObject = hitResults[0]
-            
-            // get its material
-            let material = result.node!.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
 
-        // Run the view's session
-        sceneView.session.run(configuration)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // Pause the view's session
-        sceneView.session.pause()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-
-    // MARK: - ARSCNViewDelegate
-    
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
-    }
+   
 }
